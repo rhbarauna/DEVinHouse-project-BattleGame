@@ -1,4 +1,4 @@
-package com.rhbarauna;
+package com.rhbarauna.model;
 
 import com.rhbarauna.enums.Weapon;
 

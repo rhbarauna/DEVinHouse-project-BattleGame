@@ -1,14 +1,21 @@
-package com.rhbarauna;
+package com.rhbarauna.model;
 
-import com.rhbarauna.enums.Armor;
-import com.rhbarauna.enums.GameLevel;
-import com.rhbarauna.enums.GameMotive;
-import com.rhbarauna.enums.Weapon;
+import com.rhbarauna.Battle;
+import com.rhbarauna.enums.*;
 import com.rhbarauna.exception.EndGameException;
 import com.rhbarauna.exception.GameMotiveNotFoundException;
 import com.rhbarauna.exception.HeroDefeatedException;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
+
+import static com.rhbarauna.utils.ConsoleUtils.print;
+import static com.rhbarauna.utils.ConsoleUtils.readInt;
+import static com.rhbarauna.utils.ConsoleUtils.readText;
+import static com.rhbarauna.utils.HeroUtils.getAvailableWeaponsFor;
+import static com.rhbarauna.utils.HeroUtils.getAvailableArmorsFor;
 
 public class Game {
     private GameLevel gameLevel;
@@ -18,11 +25,15 @@ public class Game {
 
     private String door;
 
+    public Game(){}
+
     public Game(Hero hero, GameLevel gameLevel, Scanner in) {
         this.hero = hero;
         this.gameLevel = gameLevel;
         this.in = in;
     }
+
+
 
     public void start() {
 

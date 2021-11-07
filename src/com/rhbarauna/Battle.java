@@ -1,10 +1,12 @@
 package com.rhbarauna;
 
 import com.rhbarauna.enums.GameLevel;
-import com.rhbarauna.enums.Weapon;
 import com.rhbarauna.exception.AttackerMissesException;
 import com.rhbarauna.exception.EndGameException;
 import com.rhbarauna.exception.HeroDefeatedException;
+import com.rhbarauna.model.Character;
+import com.rhbarauna.model.Hero;
+import com.rhbarauna.model.Monster;
 
 import java.util.Random;
 import java.util.Scanner;
@@ -39,7 +41,7 @@ public class Battle {
                     executeMonsterTurn();
                 }
 
-                if(defender.lifeGauge <= 0) {
+                if(defender.getLifeGauge() <= 0) {
                     continueBattle = false;
                     continue;
                 }

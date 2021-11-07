@@ -28,11 +28,4 @@ public enum Gender {
                 .findFirst()
                 .orElseThrow();
     }
-
-    public Gender getByName(String name) {
-        return Stream.of(Gender.values())
-                .filter(g -> name.equals(g.name))
-                .findFirst()
-                .orElseThrow();
-    }
 }

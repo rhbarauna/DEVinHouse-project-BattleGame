@@ -2,30 +2,36 @@ package com.rhbarauna.enums;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public enum Weapon {
-    SWORD("Espada", 100F, 0, 20),
-    AXE("Machado", 100F, 0, 20),
-    HAMMER("Martelo", 100F, 0, 20),
-    CLUB("Clava", 100F, 0, 20),
-    STAFF("Cajado", 100F, 0, 20),
-    BOOK("Livro", 100F, 0, 20),
-    BOW("Arco", 100F, 0, 20),
-    CROSS_BOW("Besta", 100F, 0, 20);
+    SWORD(1, "Espada", 100F, 0, 20),
+    AXE(2, "Machado", 100F, 0, 20),
+    HAMMER(3, "Martelo", 100F, 0, 20),
+    CLUB(4, "Clava", 100F, 0, 20),
+    STAFF(5, "Cajado", 100F, 0, 20),
+    BOOK(6, "Livro", 100F, 0, 20),
+    BOW(7, "Arco", 100F, 0, 20),
+    CROSS_BOW(8, "Besta", 100F, 0, 20);
 
+    private int id;
     private final String name;
     private final Float lifeGauge;
     private final int defense;
     private final int attackPower;
+    private static final List<Weapon> withAmmo = Arrays.asList(BOW,CROSS_BOW);
 
-    Weapon(String name, Float lifeGauge, int defense, int attack) {
+    Weapon(int id, String name, Float lifeGauge, int defense, int attack) {
+        this.id = id;
         this.name = name;
         this.lifeGauge = lifeGauge;
         this.defense = defense;
         this.attackPower = attack;
     }
 
-    private static final List<Weapon> withAmmo = Arrays.asList(BOW,CROSS_BOW);
+    public int getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -55,8 +61,12 @@ public enum Weapon {
         };
     }
 
+    public int getDefense() {
+        return defense;
+    }
+
     public String getAttackDescription() {
-        StringBuilder descriptionBuilder = new StringBuilder("");
+        StringBuilder descriptionBuilder = new StringBuilder();
         switch(this){
             case BOOK -> {
                 descriptionBuilder.append("absorvendo energia do livro com uma mão e liberando com a outra");
@@ -80,5 +90,12 @@ public enum Weapon {
         }
 
         return descriptionBuilder.toString();
+    }
+
+    public static Weapon getById(int id){
+        return Stream.of(Weapon.values())
+            .filter(g -> id == g.getId())
+            .findFirst()
+            .orElseThrow();
     }
 }
