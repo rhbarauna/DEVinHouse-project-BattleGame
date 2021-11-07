@@ -1,38 +1,53 @@
 package com.rhbarauna;
 
+import com.rhbarauna.enums.GameLevel;
 import com.rhbarauna.model.Game;
 import com.rhbarauna.model.Hero;
-import com.rhbarauna.utils.ConsoleUtils;
 import com.rhbarauna.utils.HeroUtils;
 
+import java.util.stream.Stream;
+
 import static com.rhbarauna.utils.ConsoleUtils.print;
+import static com.rhbarauna.utils.ConsoleUtils.readInt;
 
 public class Main {
 
     public static void main(String[] args) {
-        ConsoleUtils.print("Seja bem vindo(a) ao BATALHA FINAL!");
-
+        print("Seja bem vindo(a) ao BATALHA FINAL!");
 
         print("Vamos começar construindo o nosso avatar");
         Hero hero = HeroUtils.buildHero();
 
-//        Game game = new Game(hero);
+        print("Olá " + hero.getName() + "!\n Muito prazer em te conhecer.");
+        print("Vamos agora configurar o nivel de dificuldade desta partida.");
 
-        print("Olá " + hero.getName() + "!\n Prazer em conhecê-lo.");
-//        System.out.println("\nEscolha do nível de dificuldade:");
-//        Stream.of(GameLevel.values()).forEach(level -> System.out.println("\t" + level.getId() + " - " + level.getName()));
-//
-//        while(gameLevel == null){
-//            System.out.print("Nível (1, 2, ou 3): ");
-//            try {
-//                gameLevel = GameLevel.getById(in.nextInt());
-//            } catch (Exception e) {
-//                System.out.println("Escolha entre 1, 2 ou 3.");
-//            }
-//        }
-//        Hero hero = new Hero(heroName, gender,20, 1, 150F, Weapon.SWORD);
-//        game = new Game(hero, gameLevel, in);
-//        game.start();
-//        in.close();
+        GameLevel level = chooseGameLevel();
+
+        print("Ok, vamos de " + level.getName());
+
+        print("Tudo pronto");
+
+        try {
+            new Game(hero, level).start();
+        }
+        catch (Exception e) {
+            print(e.getMessage());
+        }
+        finally {
+            print("\n FIM DE JOGO \n");
+        }
+    }
+
+    private static GameLevel chooseGameLevel() {
+        print("Estes são os níveis disponíveis:");
+        Stream.of(GameLevel.values()).forEach(level -> print(level.getId() + " - " + level.getName()));
+
+        try {
+            int response = readInt("Qual você escolhe?");
+            return GameLevel.getById(response);
+        } catch (Exception e) {
+            print("Opção inválida");
+            return chooseGameLevel();
+        }
     }
 }

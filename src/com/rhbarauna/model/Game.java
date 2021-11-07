@@ -6,64 +6,53 @@ import com.rhbarauna.exception.EndGameException;
 import com.rhbarauna.exception.GameMotiveNotFoundException;
 import com.rhbarauna.exception.HeroDefeatedException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Stream;
-
 import static com.rhbarauna.utils.ConsoleUtils.print;
 import static com.rhbarauna.utils.ConsoleUtils.readInt;
-import static com.rhbarauna.utils.ConsoleUtils.readText;
-import static com.rhbarauna.utils.HeroUtils.getAvailableWeaponsFor;
-import static com.rhbarauna.utils.HeroUtils.getAvailableArmorsFor;
 
 public class Game {
-    private GameLevel gameLevel;
-    private Hero hero;
-    private Scanner in;
+    private final GameLevel gameLevel;
+    private final Hero hero;
     private GameMotive motive;
 
-    private String door;
-
-    public Game(){}
-
-    public Game(Hero hero, GameLevel gameLevel, Scanner in) {
+    public Game(Hero hero, GameLevel gameLevel) {
         this.hero = hero;
         this.gameLevel = gameLevel;
-        this.in = in;
     }
 
+    private void playPrelude(){
+        print("A noite se aproxima, a lua já surge no céu, estrelas vão se acendendo, e sob a luz do crepúsculo você " +
+                "está prestes a entrar na fase final da sua missão.");
+        print("Você olha para o portal à sua frente, e sabe que a partir desse ponto, sua vida mudará para sempre.");
+        print("Memórias do caminho percorrido para chegar até aqui invadem sua mente. Você se lembra de todos \n" +
+                "os inimigos já derrotados para alcançar o covil do líder maligno.");
+        print("Olha para seu equipamento de combate, já danificado e desgastado depois de tantas lutas.");
+        print("Você está a um passo de encerrar para sempre esse mal.");
+        print("Buscando uma injeção de ânimo, você se força a lembrar o que te trouxe até aqui.");
+    }
 
+    public void start() throws EndGameException, InterruptedException {
+        playPrelude();
 
-    public void start() {
+        motive = revengeOrGlory();
 
-        System.out.println("\nA noite se aproxima, a lua já surge no céu, estrelas vão se acendendo, " +
-                "e sob a luz do crepúsculo você está prestes a entrar na fase final da sua missão. " +
-                "Você olha para o portal à sua frente, e sabe que a partir desse ponto, sua vida mudará para sempre.\n" +
-                "Memórias do caminho percorrido para chegar até aqui invadem sua mente. Você se lembra de todos " +
-                "os inimigos já derrotados para alcançar o covil do líder maligno. " +
-                "Olha para seu equipamento de combate, já danificado e desgastado depois de tantas lutas. " +
-                "Você está a um passo de encerrar para sempre esse mal.\n" +
-                "Buscando uma injeção de ânimo, você se força a lembrar o que te trouxe até aqui.");
+        printMotiveDescription();
 
-        revengeOrGlory();
-
-        System.out.println("\nInspirado pelo motivo que te trouxe até aqui, você sente seu coração ardendo em chamas," +
-                "suas mãos formigarem em volta da sua arma. Você a segura com firmeza. Seu foco está renovado." +
-                "Você avança pelo portal.\n" +
-                "A escuridão te envolve. Uma iluminação muito fraca entra pelo portal às suas costas. " +
+        print("Inspirado pelo motivo que te trouxe até aqui, você sente seu coração ardendo em chamas," +
+                "suas mãos formigarem em volta da sua arma. Você a segura com firmeza. Seu foco está renovado.");
+        print("Você avança pelo portal.");
+        print("A escuridão te envolve. Uma iluminação muito fraca entra pelo portal às suas costas. " +
                 "À sua frente, só é possível perceber que você se encontra em um corredor extenso. " +
                 "Você só pode ir à frente, ou desistir.");
 
-        try {
-            continueGameOrGiveUp();
+        continueGameOrGiveUp();
 
-            System.out.println("\nVocê se pergunta se dentro dessa sala pode haver inimigos, ou alguma armadilha, " +
+        try {
+            print("Você se pergunta se dentro dessa sala pode haver inimigos, ou alguma armadilha, " +
                     "e pondera sobre como passar pela porta.");
 
             runJumpOrWalk();
 
-            System.out.println("\nVocê se encontra sozinho em uma sala quadrada, contendo uma porta em cada parede. " +
+            print("\nVocê se encontra sozinho em uma sala quadrada, contendo uma porta em cada parede. " +
                     "Uma delas foi aquela pela qual você entrou, que estava aberta, e as outras três estão fechadas. " +
                     "A porta à sua frente é a maior das quatro, com inscrições em seu entorno em uma língua que você " +
                     "não sabe ler, mas reconhece como sendo a língua antiga utilizada pelo inimigo. Você se aproxima da " +
@@ -73,84 +62,88 @@ public class Game {
 
             startRightDoorLoop();
 
-            System.out.println("\nApós derrotar o Armeiro, você percebe que seus equipamentos estão muito danificados," +
+            print("\nApós derrotar o Armeiro, você percebe que seus equipamentos estão muito danificados," +
                     " e olha em volta, encarando todas aquelas peças de armaduras resistentes e em ótimo estado.\n");
 
             changeEquipments();
 
-            System.out.println("Em uma mesa, você encontra uma chave dourada, e sabe que aquela chave abre uma das " +
+            print("Em uma mesa, você encontra uma chave dourada, e sabe que aquela chave abre uma das " +
                     "fechaduras da porta do líder inimigo. Você pega a chave e guarda numa pequena bolsa que leva " +
                     "presa ao cinto.");
 
             startLeftDoorLoop();
 
-            System.out.println("Após derrotar o Alquimista, você olha em volta, tentando reconhecer alguma poção do " +
+            print("Após derrotar o Alquimista, você olha em volta, tentando reconhecer alguma poção do " +
                     "estoque do inimigo. Em uma mesa, você reconhece uma pequena garrafa de vidro contendo um " +
                     "líquido levemente rosado, pega a garrafa e pondera se deve beber um gole.");
 
             takeElixir();
 
-            System.out.println("Ao lado da porta, você vê uma chave dourada em cima de uma mesa, e sabe que aquela " +
+            print("Ao lado da porta, você vê uma chave dourada em cima de uma mesa, e sabe que aquela " +
                     "chave abre a outra fechadura da porta do líder inimigo. Você pega a chave e guarda na pequena " +
-                    "bolsa que leva presa ao cinto.\n" +
-                    "De volta à sala das portas, você se dirige à porta final. Coloca as chaves nas fechaduras, e a " +
-                    "porta se abre. Seu coração acelera, memórias de toda a sua vida passam pela sua mente, e você " +
+                    "bolsa que leva presa ao cinto.");
+
+            print("De volta à sala das portas, você se dirige à porta final. Coloca as chaves nas fechaduras, " +
+                    "e a porta se abre.");
+
+            print("Seu coração acelera, memórias de toda a sua vida passam pela sua mente, e você " +
                     "percebe que está muito próximo do seu objetivo final. Segura sua arma com mais firmeza, foca no " +
                     "combate que você sabe que irá se seguir, e adentra a porta.");
 
+            print("Lá dentro, você vê o líder sentado em uma poltrona dourada, com duas fogueiras de cada lado, e " +
+                    "prisioneiros acorrentados às paredes.");
+
+            print("Ele percebe sua chegada e se levanta com um salto, apanhando seu machado de guerra de lâmina dupla.");
+
             startMasterDoorLoop();
 
-            System.out.println("!!!!!!!!!!!!!!!!!! VOCÊ CONSEGUIU !!!!!!!!!!!!!!!!!!");
+            print("!!!!!!!!!!!!!!!!!! VOCÊ CONSEGUIU !!!!!!!!!!!!!!!!!!");
 
             printMotiveVictoryMessage();
 
-            System.out.println("Você se levanta, olha para os prisioneiros, vai de um em um e os liberta, e todos " +
+            print("Você se levanta, olha para os prisioneiros, vai de um em um e os liberta, e todos " +
                     "vocês saem em direção à noite, retornando à cidade. Seu dever está cumprido.\n");
 
         }
         catch (HeroDefeatedException ex) {
-            System.out.println("Você não estava preparado para a força do inimigo. " + motive.getDefeatMessageFor(hero.getGender()));
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
+            print("Você não estava preparado para a força do inimigo. " + motive.getDefeatMessageFor(hero.getGender()));
         }
         finally {
-            System.out.println("\n\n FIM DE JOGO \n\n");
+            print("\n FIM DE JOGO \n\n");
         }
     }
 
     public void printMotiveDescription() {
         switch (motive) {
-            case REVENGE ->System.out.println("\nImagens daquela noite trágica invadem sua mente. Você nem precisa se esforçar para lembrar, pois essas memórias estão sempre presentes, mesmo que de pano de fundo, quando você tem outros pensamentos em foco, elas nunca o deixaram. Elas são o combustível que te fizeram chegar até aqui. E você sabe que não irá desistir até ter vingado a morte daqueles que foram - e pra sempre serão - sua fonte de amor e desejo de continuar vivo. O maldito líder finalmente pagará por tanto mal causado na vida de tantos (e principalmente na sua).");
-            case GLORY -> System.out.println("\nImagens daquela noite trágica invadem sua mente. Você nem precisa se esforçar para lembrar, pois essas memórias estão sempre presentes, mesmo que de pano de fundo, quando você tem outros pensamentos em foco, elas nunca o deixaram. Elas são o combustível que te fizeram chegar até aqui. E você sabe que não irá desistir até ter vingado a morte daqueles que foram - e pra sempre serão - sua fonte de amor e desejo de continuar vivo. O maldito líder finalmente pagará por tanto mal causado na vida de tantos (e principalmente na sua).");
+            case REVENGE ->print("Imagens daquela noite trágica invadem sua mente. Você nem precisa se esforçar para lembrar, pois essas memórias estão sempre presentes, mesmo que de pano de fundo, quando você tem outros pensamentos em foco, elas nunca o deixaram. Elas são o combustível que te fizeram chegar até aqui. E você sabe que não irá desistir até ter vingado a morte daqueles que foram - e pra sempre serão - sua fonte de amor e desejo de continuar vivo. O maldito líder finalmente pagará por tanto mal causado na vida de tantos (e principalmente na sua).");
+            case GLORY -> print("Você já consegue visualizar na sua mente o povo da cidade te recebendo de braços abertos, bardos criando canções sobre seus feitos heróicos, nobres te presenteando com jóias e diversas riquezas, taberneiros se recusando a cobrar por suas bebedeiras e comilanças. Desde já, você sente o amor do público, te louvando a cada passo que dá pelas ruas, depois de destruir o vilão que tanto assombrou a paz de todos. Porém, você sabe que ainda falta o último ato dessa história. Você se concentra na missão. A glória o aguarda, mas não antes da última batalha.");
         }
     }
 
     public void printMotiveVictoryMessage() {
         switch (motive) {
-            case REVENGE ->System.out.println("\nVocê obteve sua vingança. Você se ajoelha e cai no choro, invadido por uma sensação de alívio e felicidade. Você se vingou, tudo que sempre quis, está feito. Agora você pode seguir sua vida.");
-            case GLORY -> System.out.println("\nO êxtase em que você se encontra não cabe dentro de si. Você se ajoelha e grita de alegria. A glória o aguarda, você a conquistou.");
+            case REVENGE ->print("Você obteve sua vingança. Você se ajoelha e cai no choro, invadido por uma sensação de alívio e felicidade. Você se vingou, tudo que sempre quis, está feito. Agora você pode seguir sua vida.");
+            case GLORY -> print("O êxtase em que você se encontra não cabe dentro de si. Você se ajoelha e grita de alegria. A glória o aguarda, você a conquistou.");
         }
     }
 
-    private void revengeOrGlory() {
-        while(motive == null) {
-            System.out.println("Escolha sua motivação para invadir a caverna do inimigo e derrotá-lo: VINGANÇA (1) ou GLÓRIA (2) ");
-            try{
-                motive = GameMotive.getById(in.nextInt());
-                printMotiveDescription();
-            } catch (GameMotiveNotFoundException ex) {
-                System.out.println(ex.getMessage());
-            };
+    private GameMotive revengeOrGlory() {
+        try{
+            print("Escolha sua motivação para invadir a caverna do inimigo e derrotá-lo:");
+            int response = readInt("VINGANÇA (1) ou GLÓRIA (2) ");
+
+            return GameMotive.getById(response);
+        } catch (GameMotiveNotFoundException ex) {
+            print("Opção inválida");
+            return revengeOrGlory();
         }
     }
 
     private void continueGameOrGiveUp() throws EndGameException {
-        System.out.println("SEGUIR (1) ou DESISTIR (2)? ");
-        final int choice = in.nextInt();
+        int response = readInt("SEGUIR (1) ou DESISTIR (2)? ");
 
-        switch (choice) {
-            case 1 -> System.out.println("\nVocê caminha, atento a todos os seus sentidos, por vários metros, até visualizar a " +
+        switch (response) {
+            case 1 -> print("\nVocê caminha, atento a todos os seus sentidos, por vários metros, até visualizar a " +
                     "frente uma fonte de luz, que você imagina ser a chama de uma tocha, vindo de dentro de uma " +
                     "porta aberta.");
             case 2 -> throw new EndGameException("O medo invade o seu coração e você sente que ainda não está à altura do desafio." +
@@ -159,30 +152,31 @@ public class Game {
     }
 
     private void runJumpOrWalk() {
-        System.out.println("CORRENDO (1), SALTANDO (2) ou ANDANDO (3)? ");
-        final int choice = in.nextInt();
-
-        switch (choice) {
-            case 1 -> System.out.println("\nCORRENDO\n Você respira fundo e desata a correr em direção à sala. " +
+        int response = readInt("CORRENDO (1), SALTANDO (2) ou ANDANDO (3)? ");
+        switch (response) {
+            case 1 -> print("\nCORRENDO\n Você respira fundo e desata a correr em direção à sala. " +
                     "Quando passa pela porta, sente que pisou em uma pedra solta, mas não dá muita importância " +
                     "e segue para dentro da sala, olhando ao redor à procura de inimigos. Não tem ninguém, " +
                     "mas você ouve sons de flechas batendo na pedra atrás de você, e quando se vira, " +
                     "vê várias flechas no chão. Espiando pela porta, você entende que pisou em uma armadilha " +
                     "que soltou flechas de uma escotilha aberta no teto, mas por sorte você entrou correndo e " +
                     "conseguiu escapar desse ataque surpresa.");
-            case 2 -> System.out.println("\nSANTANDO\n Você se concentra e pula em direção à luz, saltando de antes " +
+            case 2 -> print("\nSANTANDO\n Você se concentra e pula em direção à luz, saltando de antes " +
                     "da porta até o interior da sala.");
-            case 3 -> System.out.println("\nANDANDO\n Você toma cuidado e vai caminhando vagarosamente em direção à luz. " +
+            //TODO - reduzir o sangue do jogador em X pontos usando a logica de batalha
+            case 3 -> {
+                print("\nANDANDO\n Você toma cuidado e vai caminhando vagarosamente em direção à luz. " +
                     "Quando você pisa exatamente embaixo da porta, você sente o chão ceder levemente, como se " +
                     "tivesse pisado em uma pedra solta. Você ouve um ruído de mecanismos se movimentando, " +
                     "e uma escotilha se abre no teto atrás de você, no corredor. Flechas voam da escotilha em " +
                     "sua direção, e você salta para dentro da sala, porém uma delas te acerta na perna.");
-            //TODO - O jogo deve acrescentar +5 pontos de defesa para o jogador.\n")
+            }
+
         }
     }
 
-    private void startRightDoorLoop() throws EndGameException, HeroDefeatedException, InterruptedException {
-        System.out.println("Você se aproxima, tentando ouvir o que acontece porta adentro, mas não escuta nada. " +
+    private void startRightDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
+        print("Você se aproxima, tentando ouvir o que acontece porta adentro, mas não escuta nada. " +
                 "Segura com mais força sua arma com uma mão, enquanto empurra a porta com a outra. Ao entrar, " +
                 "você se depara com uma sala espaçosa, com vários equipamentos de batalha pendurados nas paredes " +
                 "e dispostos em armários e mesas. Você imagina que este seja o arsenal do inimigo, onde estão " +
@@ -200,8 +194,8 @@ public class Game {
 
     }
 
-    private void startLeftDoorLoop() throws EndGameException, HeroDefeatedException, InterruptedException {
-        System.out.println("Você retorna à sala anterior e se dirige à porta da esquerda. Você se aproxima, " +
+    private void startLeftDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
+        print("Você retorna à sala anterior e se dirige à porta da esquerda. Você se aproxima, " +
                 "tentando ouvir o que acontece porta adentro, mas não escuta nada. Segura com mais força sua arma " +
                 "com uma mão, enquanto empurra a porta com a outra. Ao entrar, você se depara com uma sala parecida " +
                 "com a do arsenal, mas em vez de armaduras, existem vários potes e garrafas de vidro com conteúdos " +
@@ -218,15 +212,11 @@ public class Game {
     }
 
     private void startMasterDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
-        System.out.println("Lá dentro, você vê o líder sentado em uma poltrona dourada, com duas fogueiras de cada lado, e " +
-                "prisioneiros acorrentados às paredes.\n" +
-                "\tEle percebe sua chegada e se levanta com um salto, apanhando seu machado de guerra de lâmina dupla.");
-
         boolean wait = true;
 
         while(wait) {
-            System.out.println("Deseja iniciar a batalha?\n1 - Só se for agora\n2 - Vou esperar um pouco.");
-            final int response = in.nextInt();
+            print("Deseja iniciar a batalha?");
+            int response = readInt("1 - Só se for agora \n2 - Vou esperar um pouco.");
             wait = response == 2;
 
             if(wait) Thread.sleep(5000);
@@ -240,35 +230,33 @@ public class Game {
     }
 
     private void changeEquipments() {
-        System.out.println("Quer trocar de equipamentos?\n1 - SIM \n" +
-                "2 - NÃO");
-
-        int choice = in.nextInt();
+        print("Quer trocar de equipamentos?");
+        int choice = readInt("1 - SIM \n 2 - NÃO");
 
         switch(choice) {
-            case 1 -> System.out.println("Você resolve usar os equipamentos do inimigo contra ele, e trocar algumas" +
-                    " peças suas, que estavam danificadas, pelas peças de armaduras existentes na sala. De armadura" +
-                    " nova, você se sente mais protegido para os desafios à sua frente.");
-            //TODO - O jogo deve acrescentar +5 pontos de defesa para o jogador.\n")
-            case 2 -> System.out.println("Você decide que não precisa utilizar nada que venha das mãos do inimigo.");
+            case 1 -> {
+                print("Você resolve usar os equipamentos do inimigo contra ele, e trocar algumas" +
+                        " peças suas, que estavam danificadas, pelas peças de armaduras existentes na sala. De armadura" +
+                        " nova, você se sente mais protegido para os desafios à sua frente.");
+                hero.setDefense( hero.getDefense() + 5);
+            }
+
+            case 2 -> print("Você decide que não precisa utilizar nada que venha das mãos do inimigo.");
         }
     }
 
     private void takeElixir(){
-        System.out.println("Quer beber o elixir?\n" +
-                "1 - SIM \n" +
-                "2 - NÃO");
-
-        int choice = in.nextInt();
+        print("Quer beber o elixir?");
+        int choice = readInt("1 - SIM \n 2 - NÃO");
 
         switch(choice) {
             case 1 -> {
                 hero.resetLifeGauge();
-                System.out.println("Você se sente revigorado para seguir adiante!");
+                print("Você se sente revigorado para seguir adiante!");
             }
-            case 2 -> System.out.println("Você fica receoso de beber algo produzido pelo inimigo.");
+            case 2 -> print("Você fica receoso de beber algo produzido pelo inimigo.");
             default -> {
-                System.out.println("Opção inválida");
+                print("Opção inválida");
                 takeElixir();
             }
         }
