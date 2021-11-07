@@ -108,9 +108,6 @@ public class Game {
         catch (HeroDefeatedException ex) {
             print("Você não estava preparado para a força do inimigo. " + motive.getDefeatMessageFor(hero.getGender()));
         }
-        finally {
-            print("\n FIM DE JOGO \n\n");
-        }
     }
 
     public void printMotiveDescription() {

@@ -7,9 +7,10 @@ import com.rhbarauna.exception.HeroDefeatedException;
 import com.rhbarauna.model.Character;
 import com.rhbarauna.model.Hero;
 import com.rhbarauna.model.Monster;
-
 import java.util.Random;
 import java.util.Scanner;
+
+import static com.rhbarauna.utils.ConsoleUtils.print;
 
 public class Battle {
     private GameLevel gameLevel;
@@ -63,7 +64,7 @@ public class Battle {
             throw new HeroDefeatedException();
         }
 
-        System.out.println("O inimigo não é páreo para o seu heroísmo, e jaz imóvel aos seus pés.");
+        print("O inimigo não é páreo para o seu heroísmo, e jaz imóvel aos seus pés.");
     }
 
     private void executeMonsterTurn() throws InterruptedException, AttackerMissesException {
