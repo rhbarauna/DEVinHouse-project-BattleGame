@@ -8,13 +8,9 @@ import com.rhbarauna.exception.EndGameException;
 import com.rhbarauna.exception.GameMotiveNotFoundException;
 import com.rhbarauna.exception.HeroDefeatedException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Game {
-    private final Map<String, String> doors = new HashMap<> ();
-
     private GameLevel gameLevel;
     private Hero hero;
     private Scanner in;
@@ -89,12 +85,8 @@ public class Game {
                     "De volta à sala das portas, você se dirige à porta final. Coloca as chaves nas fechaduras, e a " +
                     "porta se abre. Seu coração acelera, memórias de toda a sua vida passam pela sua mente, e você " +
                     "percebe que está muito próximo do seu objetivo final. Segura sua arma com mais firmeza, foca no " +
-                    "combate que você sabe que irá se seguir, e adentra a porta.\n" +
-                    "Lá dentro, você vê o líder sentado em uma poltrona dourada, com duas fogueiras de cada lado, e " +
-                    "prisioneiros acorrentados às paredes.\n" +
-                    "Ele percebe sua chegada e se levanta com um salto, apanhando seu machado de guerra de lâmina dupla.");
+                    "combate que você sabe que irá se seguir, e adentra a porta.");
 
-            //TODO - mostrar opções de atacar ou aguardar
             startMasterDoorLoop();
 
             System.out.println("!!!!!!!!!!!!!!!!!! VOCÊ CONSEGUIU !!!!!!!!!!!!!!!!!!");
@@ -214,13 +206,30 @@ public class Game {
         b2.startBattle();
     }
 
-    private void startMasterDoorLoop() throws EndGameException, InterruptedException {
+    private void startMasterDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
+        System.out.println("Lá dentro, você vê o líder sentado em uma poltrona dourada, com duas fogueiras de cada lado, e " +
+                "prisioneiros acorrentados às paredes.\n" +
+                "\tEle percebe sua chegada e se levanta com um salto, apanhando seu machado de guerra de lâmina dupla.");
 
+        boolean wait = true;
+
+        while(wait) {
+            System.out.println("Deseja iniciar a batalha?\n1 - Só se for agora\n2 - Vou esperar um pouco.");
+            final int response = in.nextInt();
+            wait = response == 2;
+
+            if(wait) Thread.sleep(5000);
+        }
+
+        Monster orck = new Monster("Orck MASTER", 10, 4, 200F, Weapon.AXE);
+        orck.setArmor(Armor.ARMOR);
+
+        Battle b2 = new Battle(hero, orck, gameLevel);
+        b2.startBattle();
     }
 
     private void changeEquipments() {
-        System.out.println("Quer trocar de equipamentos?\n" +
-                "1 - SIM \n" +
+        System.out.println("Quer trocar de equipamentos?\n1 - SIM \n" +
                 "2 - NÃO");
 
         int choice = in.nextInt();
@@ -242,9 +251,15 @@ public class Game {
         int choice = in.nextInt();
 
         switch(choice) {
-            case 1 -> System.out.println("Você se sente revigorado para seguir adiante!");
-            //TODO -  e recupera 100% dos pontos de vida do jogador
+            case 1 -> {
+                hero.resetLifeGauge();
+                System.out.println("Você se sente revigorado para seguir adiante!");
+            }
             case 2 -> System.out.println("Você fica receoso de beber algo produzido pelo inimigo.");
+            default -> {
+                System.out.println("Opção inválida");
+                takeElixir();
+            }
         }
     }
 

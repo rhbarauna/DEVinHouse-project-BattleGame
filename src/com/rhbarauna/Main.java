@@ -44,7 +44,7 @@ public class Main {
                 System.out.println("Escolha entre 1, 2 ou 3.");
             }
         }
-        Hero hero = new Hero(heroName, gender,50, 1, 100F, Weapon.SWORD);
+        Hero hero = new Hero(heroName, gender,20, 1, 150F, Weapon.SWORD);
         game = new Game(hero, gameLevel, in);
         game.start();
         in.close();

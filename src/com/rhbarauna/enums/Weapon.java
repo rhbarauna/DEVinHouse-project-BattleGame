@@ -1,41 +1,34 @@
 package com.rhbarauna.enums;
 
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.List;
 
 public enum Weapon {
-    SWORD("Espada", 100F, 0, 20, null),
-    AXE("Machado", 100F, 0, 20, null),
-    HAMMER("Martelo", 100F, 0, 20, null),
-    CLUB("Clava", 100F, 0, 20, null),
-    STAFF("Cajado", 100F, 0, 40, null),
-    BOOK("Livro", 100F, 0, 40, null),
-    BOW("Arco", 100F, 0, 40, "flecha"),
-    CROSS_BOW("Besta", 100F, 0, 40, "virote");
+    SWORD("Espada", 100F, 0, 20),
+    AXE("Machado", 100F, 0, 20),
+    HAMMER("Martelo", 100F, 0, 20),
+    CLUB("Clava", 100F, 0, 20),
+    STAFF("Cajado", 100F, 0, 20),
+    BOOK("Livro", 100F, 0, 20),
+    BOW("Arco", 100F, 0, 20),
+    CROSS_BOW("Besta", 100F, 0, 20);
 
     private final String name;
     private final Float lifeGauge;
     private final int defense;
     private final int attackPower;
-    private final Optional<String> ammo;
 
-    Weapon(String name, Float lifeGauge, int defense, int attack, String ammo) {
+    Weapon(String name, Float lifeGauge, int defense, int attack) {
         this.name = name;
         this.lifeGauge = lifeGauge;
         this.defense = defense;
         this.attackPower = attack;
-        this.ammo = Optional.ofNullable(ammo);
     }
+
+    private static final List<Weapon> withAmmo = Arrays.asList(BOW,CROSS_BOW);
 
     public String getName() {
         return name;
-    }
-
-    public Float getLifeGauge() {
-        return lifeGauge;
-    }
-
-    public int getDefense() {
-        return defense;
     }
 
     public int getAttackPower() {
@@ -43,7 +36,7 @@ public enum Weapon {
     }
 
     private boolean hasAmmo(){
-        return this.ammo.isPresent();
+        return withAmmo.contains(this);
     }
 
     private String getPronoun() {
