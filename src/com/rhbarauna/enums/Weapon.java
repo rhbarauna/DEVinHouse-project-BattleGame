@@ -44,26 +44,40 @@ public enum Weapon {
         return ammo;
     }
 
-    public String getPronoun() {
-        switch (this) {
-            case AXE:
-            case BOW:
-            case STAFF:
-            case HAMMER:
-                return "seu";
-            default:
-                return "sua";
-        }
+    private boolean hasAmmo(){
+        return this.ammo.isPresent();
     }
 
-    public String getAmmoPronoun() {
-        switch (this) {
-            case BOW:
-                return "a";
-            case CROSS_BOW:
-                return "o";
-            default:
-                return "";
+    private String getPronoun() {
+        return switch (this) {
+            case AXE, BOW, STAFF, HAMMER -> "seu";
+            default -> "sua";
+        };
+    }
+
+    private String getAmmoPronoun() {
+        return switch (this) {
+            case BOW -> "a";
+            case CROSS_BOW -> "o";
+            default -> "";
+        };
+    }
+
+    public String getAttackDescription() {
+        StringBuilder descriptionBuilder = new StringBuilder("com ")
+            .append(getPronoun())
+            .append(" ")
+            .append(getName());
+
+
+
+        if(hasAmmo()) {
+            descriptionBuilder.append(", ")
+                .append(getAmmoPronoun())
+                .append(" ")
+                .append(getAmmo().get());
         }
+
+        return descriptionBuilder.toString();
     }
 }

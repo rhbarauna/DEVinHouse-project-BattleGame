@@ -35,17 +35,15 @@ public class Battle {
             try {
                 if(attacker instanceof Hero) {
                     executeHeroTurn();
-                    continue;
+                } else {
+                    executeMonsterTurn();
                 }
 
-                executeMonsterTurn();
-
-                if(defender.lifeGauge < 0) {
+                if(defender.lifeGauge <= 0) {
                     continueBattle = false;
                     continue;
                 }
 
-                switchPlayers();
             } catch(AttackerMissesException ex) {
                 String message = "Você errou seu ataque! O inimigo não sofreu dano algum.";
 
@@ -54,6 +52,8 @@ public class Battle {
                 }
 
                 System.out.println(message);
+            } finally {
+                if(continueBattle) switchPlayers();
             }
         }
 
@@ -70,10 +70,10 @@ public class Battle {
         int inflictedDamage = calculateDamage(diceValue);
         defender.takeDamage(inflictedDamage);
 
-        String message = "%nO inimigo atacou! Você sofreu %d de dano e agora possui %d pontos de vida.";
+        String message = "%nO inimigo atacou! Você sofreu %d de dano e agora possui %.2f pontos de vida.%n";
 
         if(diceValue == 20) {
-            message = "%nO inimigo acertou um ataque crítico! Você sofreu %d de dano e agora possui %d pontos de vida.";
+            message = "%nO inimigo acertou um ataque crítico! Você sofreu %d de dano e agora possui %d pontos de vida.%n";
         }
         System.out.printf(message, inflictedDamage, defender.getLifeGauge());
     }
@@ -91,15 +91,14 @@ public class Battle {
         int inflictedDamage = calculateDamage(diceValue);
         defender.takeDamage(inflictedDamage);
 
-        String message = "Você atacou com %s e causou %d de dano no inimigo!";
+        String message = "Você atacou %s e causou %d de dano no inimigo! "+defender.getLifeGauge();
 
         if(diceValue == 20) {
             message = "Você acertou um ataque crítico! "+message;
         }
 
-        Weapon attackerWeapon = attacker.getWeapon();
-
-        System.out.printf("%n"+message, inflictedDamage);
+        final String weaponDescription = attacker.getWeapon().getAttackDescription();
+        System.out.printf("%n"+message, weaponDescription, inflictedDamage);
     }
 
     private int getDiceValue() throws AttackerMissesException {
