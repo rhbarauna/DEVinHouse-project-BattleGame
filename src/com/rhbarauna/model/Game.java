@@ -4,7 +4,7 @@ import com.rhbarauna.Battle;
 import com.rhbarauna.enums.*;
 import com.rhbarauna.exception.AttackerMissesException;
 import com.rhbarauna.exception.EndGameException;
-import com.rhbarauna.exception.GameMotiveNotFoundException;
+import com.rhbarauna.exception.GameMotivationNotFoundException;
 import com.rhbarauna.exception.HeroDefeatedException;
 
 import static com.rhbarauna.utils.ConsoleUtils.print;
@@ -14,7 +14,7 @@ import static com.rhbarauna.utils.BattleUtils.getDiceValue;
 public class Game {
     private final GameLevel gameLevel;
     private final Hero hero;
-    private GameMotive motive;
+    private Motivation motivation;
 
     public Game(Hero hero, GameLevel gameLevel) {
         this.hero = hero;
@@ -36,7 +36,7 @@ public class Game {
         playPrelude();
 
         revengeOrGlory();
-        printMotiveDescription();
+        printMotivationDescription();
 
         print("Inspirado pelo motivo que te trouxe até aqui, você sente seu coração ardendo em chamas," +
                 "suas mãos formigarem em volta da sua arma. Você a segura com firmeza. Seu foco está renovado.");
@@ -74,7 +74,7 @@ public class Game {
                 "capacete e espada em punho, em posição de combate. Ele avança em sua direção.");
 
         try {
-            startFirstRoomBattle();
+            startBattle(Monsters.GUNSMITH.getMonster());
 
             print("Após derrotar o Armeiro, você percebe que seus equipamentos estão muito danificados," +
                     " e olha em volta, encarando todas aquelas peças de armaduras resistentes e em ótimo estado.");
@@ -95,7 +95,7 @@ public class Game {
             print("No fundo da sala, olhando em sua direção, está outro dos capitães do inimigo. Um orque horrendo, " +
                     "de armadura, cajado em punho, em posição de combate. Ele avança em sua direção.");
 
-            startSecondRoomBattle();
+            startBattle(Monsters.ALCHEMIST.getMonster());
 
             print("Após derrotar o Alquimista, você olha em volta, tentando reconhecer alguma poção do " +
                     "estoque do inimigo. Em uma mesa, você reconhece uma pequena garrafa de vidro contendo um " +
@@ -121,7 +121,7 @@ public class Game {
 
             waitOrContinue();
 
-            startMasterDoorLoop();
+            startBattle(Monsters.BOSS.getMonster());
 
             print("!!!!!!!!!!!!!!!!!! VOCÊ CONSEGUIU !!!!!!!!!!!!!!!!!!");
 
@@ -131,19 +131,19 @@ public class Game {
                     "vocês saem em direção à noite, retornando à cidade. Seu dever está cumprido.\n");
         }
         catch (HeroDefeatedException ex) {
-            throw new EndGameException("Você não estava preparado para a força do inimigo. " + motive.getDefeatMessageFor(hero.getGender()));
+            throw new EndGameException("Você não estava preparado para a força do inimigo. " + motivation.getDefeatMessageFor(hero.getGender()));
         }
     }
 
-    public void printMotiveDescription() {
-        switch (motive) {
+    public void printMotivationDescription() {
+        switch (motivation) {
             case REVENGE ->print("Imagens daquela noite trágica invadem sua mente. Você nem precisa se esforçar para lembrar, pois essas memórias estão sempre presentes, mesmo que de pano de fundo, quando você tem outros pensamentos em foco, elas nunca o deixaram. Elas são o combustível que te fizeram chegar até aqui. E você sabe que não irá desistir até ter vingado a morte daqueles que foram - e pra sempre serão - sua fonte de amor e desejo de continuar vivo. O maldito líder finalmente pagará por tanto mal causado na vida de tantos (e principalmente na sua).");
             case GLORY -> print("Você já consegue visualizar na sua mente o povo da cidade te recebendo de braços abertos, bardos criando canções sobre seus feitos heróicos, nobres te presenteando com jóias e diversas riquezas, taberneiros se recusando a cobrar por suas bebedeiras e comilanças. Desde já, você sente o amor do público, te louvando a cada passo que dá pelas ruas, depois de destruir o vilão que tanto assombrou a paz de todos. Porém, você sabe que ainda falta o último ato dessa história. Você se concentra na missão. A glória o aguarda, mas não antes da última batalha.");
         }
     }
 
     public void printMotiveVictoryMessage() {
-        switch (motive) {
+        switch (motivation) {
             case REVENGE ->print("Você obteve sua vingança. Você se ajoelha e cai no choro, invadido por uma sensação de alívio e felicidade. Você se vingou, tudo que sempre quis, está feito. Agora você pode seguir sua vida.");
             case GLORY -> print("O êxtase em que você se encontra não cabe dentro de si. Você se ajoelha e grita de alegria. A glória o aguarda, você a conquistou.");
         }
@@ -154,8 +154,8 @@ public class Game {
             print("Escolha sua motivação para invadir a caverna do inimigo e derrotá-lo:");
             int response = readInt("VINGANÇA (1) ou GLÓRIA (2) ");
 
-            motive = GameMotive.getById(response);
-        } catch (GameMotiveNotFoundException ex) {
+            motivation = Motivation.getById(response);
+        } catch (GameMotivationNotFoundException ex) {
             print("Opção inválida");
             revengeOrGlory();
         }
@@ -210,16 +210,6 @@ public class Game {
         }
     }
 
-    private void startFirstRoomBattle() throws EndGameException, InterruptedException, HeroDefeatedException {
-        Monster orck = new Monster("Orck Armeiro", 2, 1, 80F, Weapon.SWORD);
-        startBattle(hero, orck, gameLevel);
-    }
-
-    private void startSecondRoomBattle() throws EndGameException, InterruptedException, HeroDefeatedException {
-        Monster orck = new Monster("Orck Alquimista", 4, 2, 90F, Weapon.STAFF);
-        startBattle(hero, orck, gameLevel);
-    }
-
     private void waitOrContinue() throws InterruptedException {
         print("Deseja iniciar a batalha?");
         int response = readInt("1 - Só se for agora \n2 - Vou esperar um pouco.");
@@ -228,11 +218,6 @@ public class Game {
             Thread.sleep(5000);
             waitOrContinue();
         }
-    }
-
-    private void startMasterDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
-        Monster orck = new Monster("Orck MASTER", 10, 4, 200F, Weapon.AXE);
-        startBattle(hero, orck, gameLevel);
     }
 
     private void changeEquipments() {
@@ -272,7 +257,7 @@ public class Game {
         }
     }
 
-    private void startBattle(Hero hero, Monster monster, GameLevel gameLevel)  throws EndGameException, InterruptedException, HeroDefeatedException {
+    private void startBattle(Monster monster)  throws EndGameException, InterruptedException, HeroDefeatedException {
         Battle b = new Battle(hero, monster, gameLevel);
         b.run();
     }

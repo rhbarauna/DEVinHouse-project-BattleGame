@@ -1,23 +1,23 @@
 package com.rhbarauna.enums;
 
-import com.rhbarauna.exception.GameMotiveNotFoundException;
+import com.rhbarauna.exception.GameMotivationNotFoundException;
 
-public enum GameMotive {
+public enum Motivation {
     REVENGE(1),
     GLORY(2);
 
     private int id;
 
-    GameMotive(int id) {
+    Motivation(int id) {
         this.id = id;
     }
 
-    public static GameMotive getById(int id) throws GameMotiveNotFoundException {
+    public static Motivation getById(int id) throws GameMotivationNotFoundException {
 
         switch (id){
             case 1 -> { return REVENGE; }
             case 2 -> { return GLORY; }
-            default -> new GameMotiveNotFoundException("Nenhuma motivação encontrada com o valor " + id);
+            default -> new GameMotivationNotFoundException("Nenhuma motivação encontrada com o valor " + id);
         }
 
         return null;
