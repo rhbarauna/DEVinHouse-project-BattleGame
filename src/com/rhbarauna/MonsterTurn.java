@@ -1,24 +1,30 @@
 package com.rhbarauna;
 
+import com.rhbarauna.enums.GameLevel;
 import com.rhbarauna.exception.AttackerMissesException;
 import com.rhbarauna.exception.EndGameException;
+import com.rhbarauna.model.Character;
 
 import static com.rhbarauna.utils.BattleUtils.getDiceValue;
+import static com.rhbarauna.utils.BattleUtils.printEnemyAttackMessage;
 
 public class MonsterTurn extends BattleTurn {
 
+    public MonsterTurn(Character attacker, Character defender, GameLevel gameLevel) {
+        super(attacker, defender, gameLevel);
+    }
+
+    @Override
+    protected float getLevelMultiplier() {
+        return gameLevel.getMonsterMultiplier();
+    }
+    @Override
+    protected void printAttackMessage(float inflictedDamage) {
+        printEnemyAttackMessage(diceValue, inflictedDamage, defender.getLifeGauge());
+    }
+
     @Override
     public void execute() throws EndGameException, AttackerMissesException {
-        int diceValue = getDiceValue();
-        int inflictedDamage = calculateDamage(diceValue);
-        defender.takeDamage(inflictedDamage);
-
-        String message = "%nO inimigo atacou! Você sofreu %.2f de dano e agora possui %.2f pontos de vida.%n";
-
-        if(diceValue == 20) {
-            message = "%nO inimigo acertou um ataque crítico! Você sofreu %d de dano e agora possui %d pontos de vida.%n";
-        }
-        System.out.printf(message, inflictedDamage, defender.getLifeGauge());
         super.execute();
     }
 }

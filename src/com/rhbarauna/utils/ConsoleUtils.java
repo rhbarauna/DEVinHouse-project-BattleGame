@@ -26,7 +26,9 @@ public class ConsoleUtils {
     public static int readInt(final String message) {
         print(message);
         Scanner in = getScanner();
-        return in.nextInt();
+        int input =  in.nextInt();
+        in.nextLine();
+        return input;
     }
 
     public static String readText(final String message) {

@@ -7,9 +7,9 @@ import com.rhbarauna.exception.EndGameException;
 import com.rhbarauna.exception.GameMotivationNotFoundException;
 import com.rhbarauna.exception.HeroDefeatedException;
 
+import static com.rhbarauna.utils.BattleUtils.*;
 import static com.rhbarauna.utils.ConsoleUtils.print;
 import static com.rhbarauna.utils.ConsoleUtils.readInt;
-import static com.rhbarauna.utils.BattleUtils.getDiceValue;
 
 public class Game {
     private final GameLevel gameLevel;
@@ -25,7 +25,7 @@ public class Game {
         print("A noite se aproxima, a lua já surge no céu, estrelas vão se acendendo, e sob a luz do crepúsculo você " +
                 "está prestes a entrar na fase final da sua missão.");
         print("Você olha para o portal à sua frente, e sabe que a partir desse ponto, sua vida mudará para sempre.");
-        print("Memórias do caminho percorrido para chegar até aqui invadem sua mente. Você se lembra de todos \n" +
+        print("Memórias do caminho percorrido para chegar até aqui invadem sua mente. Você se lembra de todos " +
                 "os inimigos já derrotados para alcançar o covil do líder maligno.");
         print("Olha para seu equipamento de combate, já danificado e desgastado depois de tantas lutas.");
         print("Você está a um passo de encerrar para sempre esse mal.");
@@ -86,11 +86,14 @@ public class Game {
                     "presa ao cinto.");
 
             print("Você retorna à sala anterior e se dirige à porta da esquerda. Você se aproxima, " +
-                    "tentando ouvir o que acontece porta adentro, mas não escuta nada. Segura com mais força sua arma " +
-                    "com uma mão, enquanto empurra a porta com a outra. Ao entrar, você se depara com uma sala parecida " +
-                    "com a do arsenal, mas em vez de armaduras, existem vários potes e garrafas de vidro com conteúdos " +
-                    "misteriosos e de cores diversas, e você entende que o capitão que vive ali, realiza experimentos " +
-                    "com diversos ingredientes, criando poções utilizadas pelos soldados para aterrorizar a região.");
+                    "tentando ouvir o que acontece porta adentro, mas não escuta nada.");
+
+            print("Segura com mais força sua arma com uma mão, enquanto empurra a porta com a outra.");
+
+            print("Ao entrar, você se depara com uma sala parecida com a do arsenal, mas em vez de armaduras, " +
+                    "existem vários potes e garrafas de vidro com conteúdos misteriosos e de cores diversas, e você " +
+                    "entende que o capitão que vive ali, realiza experimentos com diversos ingredientes, criando " +
+                    "poções utilizadas pelos soldados para aterrorizar a região.");
 
             print("No fundo da sala, olhando em sua direção, está outro dos capitães do inimigo. Um orque horrendo, " +
                     "de armadura, cajado em punho, em posição de combate. Ele avança em sua direção.");
@@ -103,16 +106,17 @@ public class Game {
 
             takeElixir();
 
-            print("Ao lado da porta, você vê uma chave dourada em cima de uma mesa, e sabe que aquela " +
-                    "chave abre a outra fechadura da porta do líder inimigo. Você pega a chave e guarda na pequena " +
-                    "bolsa que leva presa ao cinto.");
+            print("Ao lado da porta, você vê uma chave dourada em cima de uma mesa, e sabe que aquela chave abre a " +
+                    "outra fechadura da porta do líder inimigo.");
+
+            print("Você pega a chave e guarda na pequena bolsa que leva presa ao cinto.");
 
             print("De volta à sala das portas, você se dirige à porta final. Coloca as chaves nas fechaduras, " +
                     "e a porta se abre.");
 
             print("Seu coração acelera, memórias de toda a sua vida passam pela sua mente, e você " +
-                    "percebe que está muito próximo do seu objetivo final. Segura sua arma com mais firmeza, foca no " +
-                    "combate que você sabe que irá se seguir, e adentra a porta.");
+                    "percebe que está muito próximo do seu objetivo final. ");
+            print("Segura sua arma com mais firmeza, foca no combate que você sabe que irá se seguir, e adentra a porta.");
 
             print("Lá dentro, você vê o líder sentado em uma poltrona dourada, com duas fogueiras de cada lado, e " +
                     "prisioneiros acorrentados às paredes.");
@@ -137,8 +141,24 @@ public class Game {
 
     public void printMotivationDescription() {
         switch (motivation) {
-            case REVENGE ->print("Imagens daquela noite trágica invadem sua mente. Você nem precisa se esforçar para lembrar, pois essas memórias estão sempre presentes, mesmo que de pano de fundo, quando você tem outros pensamentos em foco, elas nunca o deixaram. Elas são o combustível que te fizeram chegar até aqui. E você sabe que não irá desistir até ter vingado a morte daqueles que foram - e pra sempre serão - sua fonte de amor e desejo de continuar vivo. O maldito líder finalmente pagará por tanto mal causado na vida de tantos (e principalmente na sua).");
-            case GLORY -> print("Você já consegue visualizar na sua mente o povo da cidade te recebendo de braços abertos, bardos criando canções sobre seus feitos heróicos, nobres te presenteando com jóias e diversas riquezas, taberneiros se recusando a cobrar por suas bebedeiras e comilanças. Desde já, você sente o amor do público, te louvando a cada passo que dá pelas ruas, depois de destruir o vilão que tanto assombrou a paz de todos. Porém, você sabe que ainda falta o último ato dessa história. Você se concentra na missão. A glória o aguarda, mas não antes da última batalha.");
+            case REVENGE -> {
+                print("Imagens daquela noite trágica invadem sua mente.");
+                print("Você nem precisa se esforçar para lembrar, pois essas memórias estão sempre presentes, " +
+                        "mesmo que de pano de fundo, quando você tem outros pensamentos em foco, elas nunca o deixaram.");
+                print("Elas são o combustível que te fizeram chegar até aqui. E você sabe que não irá desistir até " +
+                        "ter vingado a morte daqueles que foram - e pra sempre serão - sua fonte de amor e desejo " +
+                        "de continuar vivo.");
+                print("O maldito líder finalmente pagará por tanto mal causado na vida de tantos (e principalmente na sua).");
+            }
+            case GLORY -> {
+                print("Você já consegue visualizar na sua mente o povo da cidade te recebendo de braços abertos, " +
+                        "bardos criando canções sobre seus feitos heróicos, nobres te presenteando com jóias e " +
+                        "diversas riquezas, taberneiros se recusando a cobrar por suas bebedeiras e comilanças.");
+                print("Desde já, você sente o amor do público, te louvando a cada passo que dá pelas ruas, depois" +
+                        "de destruir o vilão que tanto assombrou a paz de todos.");
+                print("Porém, você sabe que ainda falta o último ato dessa história.");
+                print("Você se concentra na missão. A glória o aguarda, mas não antes da última batalha.");
+            }
         }
     }
 
@@ -202,7 +222,12 @@ public class Game {
                         "porém uma delas te acerta na perna.");
 
                 try{
-                    hero.takeDamage(getDiceValue(10));
+                    int diceValue = getDiceValue(10);
+                    float damage = calculateDamage(diceValue, hero.getDefense());
+                    hero.takeDamage(damage);
+
+                    printEnemyAttackMessage(diceValue, damage, hero.getLifeGauge());
+
                 } catch(AttackerMissesException ex) {
                     print("Por sorte foi apenas de raspão e você não tomou nenhum dano");
                 }
@@ -222,7 +247,7 @@ public class Game {
 
     private void changeEquipments() {
         print("Quer trocar de equipamentos?");
-        int choice = readInt("1 - SIM \n 2 - NÃO");
+        int choice = readInt("1 - SIM \n2 - NÃO");
 
         switch(choice) {
             case 1 -> {
@@ -242,7 +267,7 @@ public class Game {
 
     private void takeElixir(){
         print("Quer beber o elixir?");
-        int choice = readInt("1 - SIM \n 2 - NÃO");
+        int choice = readInt("1 - SIM \n2 - NÃO");
 
         switch(choice) {
             case 1 -> {
@@ -260,5 +285,6 @@ public class Game {
     private void startBattle(Monster monster)  throws EndGameException, InterruptedException, HeroDefeatedException {
         Battle b = new Battle(hero, monster, gameLevel);
         b.run();
+        b = null;
     }
 }

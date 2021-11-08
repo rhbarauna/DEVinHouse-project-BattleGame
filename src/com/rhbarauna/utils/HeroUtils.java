@@ -28,9 +28,9 @@ public class HeroUtils {
 
     public static List<Armor> getAvailableArmorsFor(HeroClass heroClass) {
         return switch(heroClass) {
-            case WARRIOR -> Arrays.asList(Armor.ARMOR);
-            case WIZARD -> Arrays.asList(Armor.ARMOR);
-            case ELF -> Arrays.asList(Armor.ARMOR);
+            case WARRIOR -> Arrays.asList(Armor.MEDIUM_ARMOR, Armor.HEAVY_ARMOR);
+            case WIZARD -> Arrays.asList(Armor.ARMOR, Armor.MEDIUM_ARMOR, Armor.HEAVY_ARMOR);
+            case ELF -> Arrays.asList(Armor.ARMOR, Armor.MEDIUM_ARMOR);
         };
     }
 

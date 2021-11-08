@@ -1,12 +1,22 @@
 package com.rhbarauna;
 
+import com.rhbarauna.enums.GameLevel;
 import com.rhbarauna.exception.AttackerMissesException;
 import com.rhbarauna.exception.EndGameException;
-import static com.rhbarauna.utils.BattleUtils.getDiceValue;
-import static com.rhbarauna.utils.ConsoleUtils.print;
+import com.rhbarauna.model.Character;
+
 import static com.rhbarauna.utils.ConsoleUtils.readInt;
 
 public class HeroTurn extends BattleTurn {
+    public HeroTurn(Character attacker, Character defender, GameLevel gameLevel) {
+        super(attacker, defender, gameLevel);
+    }
+
+    @Override
+    protected float getLevelMultiplier() {
+        return gameLevel.getHeroMultiplier();
+    }
+
     public void execute() throws EndGameException, AttackerMissesException {
         int response = readInt("1 - Atacar ou 2 - Fugir");
 
@@ -17,16 +27,15 @@ public class HeroTurn extends BattleTurn {
         super.execute();
     }
 
-    public String printAttackMessage(int diceValue) {
-        String message = "Você atacou %s e causou %.2f de dano no inimigo!";
+    @Override
+    protected void printAttackMessage(float inflictedDamage) {
+        String message = "Você atacou %s e causou %.2f de dano no inimigo!%n";
 
         if(diceValue == 20) {
-            message = "Você acertou um ataque crítico! "+message;
+            message = "Você acertou um ataque crítico! " + message;
         }
 
         final String weaponDescription = attacker.getWeapon().getAttackDescription();
-
-//        System.out.printf("%n"+message, weaponDescription, inflictedDamage);
-        return "";
+        System.out.printf("%n"+message, weaponDescription, inflictedDamage);
     }
 }

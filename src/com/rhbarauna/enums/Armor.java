@@ -5,10 +5,9 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public enum Armor {
-    HELMET("Capacete", 100F, 40),
-    ARMOR("Armadura", 100F, 50),
-    ARMOR_GAUNTLET("Luvas", 100F, 20),
-    ARMOR_LEGS("Pernas", 100F, 20);
+    ARMOR("Armadura", 100F, 10),
+    MEDIUM_ARMOR("Armadura Média", 100F, 20),
+    HEAVY_ARMOR("Armadura Pesada", 100F, 40);
 
     private final String name;
     private final Float lifeGauge;
