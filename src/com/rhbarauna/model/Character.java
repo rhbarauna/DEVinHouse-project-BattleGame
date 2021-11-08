@@ -25,7 +25,7 @@ public abstract class Character {
         int equipmentsTotalAttackPower = weapon.getAttackPower();
         return this.strength + equipmentsTotalAttackPower;
     };
-    public void takeDamage(int damage) {
+    public void takeDamage(float damage) {
         this.lifeGauge -= damage;
     }
 

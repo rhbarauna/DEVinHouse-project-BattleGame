@@ -84,7 +84,7 @@ public enum Weapon {
                     descriptionBuilder
                         .append(",")
                         .append(getAmmoAttack())
-                        .append("atingiu");
+                        .append(" atingiu");
                 }
             }
         }

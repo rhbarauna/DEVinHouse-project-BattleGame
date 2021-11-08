@@ -31,7 +31,7 @@ public class Battle {
         this.scanner = new Scanner(System.in);
     }
 
-    public void startBattle() throws EndGameException, HeroDefeatedException, InterruptedException {
+    public void run() throws EndGameException, HeroDefeatedException, InterruptedException {
         boolean continueBattle = true;
         //TODO - REFACTOR THIS
         while(continueBattle) {
@@ -44,9 +44,7 @@ public class Battle {
 
                 if(defender.getLifeGauge() <= 0) {
                     continueBattle = false;
-                    continue;
                 }
-
             } catch(AttackerMissesException ex) {
                 String message = "Você errou seu ataque! O inimigo não sofreu dano algum.";
 
@@ -70,13 +68,14 @@ public class Battle {
     private void executeMonsterTurn() throws InterruptedException, AttackerMissesException {
         Thread.sleep(1200);
         int diceValue = getDiceValue();
-        int inflictedDamage = calculateDamage(diceValue);
+        float calculatedDamage = calculateDamage(diceValue);
+        float inflictedDamage = calculatedDamage * gameLevel.getMonsterMultiplier();
         defender.takeDamage(inflictedDamage);
 
-        String message = "%nO inimigo atacou! Você sofreu %d de dano e agora possui %.2f pontos de vida.%n";
+        String message = "%nO inimigo atacou! Você sofreu %.2f de dano e agora possui %.2f pontos de vida.%n";
 
         if(diceValue == 20) {
-            message = "%nO inimigo acertou um ataque crítico! Você sofreu %d de dano e agora possui %d pontos de vida.%n";
+            message = "%nO inimigo acertou um ataque crítico! Você sofreu %.2f de dano e agora possui %.2f pontos de vida.%n";
         }
         System.out.printf(message, inflictedDamage, defender.getLifeGauge());
     }
@@ -91,17 +90,18 @@ public class Battle {
         }
 
         int diceValue = getDiceValue();
-        int inflictedDamage = calculateDamage(diceValue);
+        float calculatedDamage = calculateDamage(diceValue);
+        float inflictedDamage = calculatedDamage * gameLevel.getHeroMultiplier();
         defender.takeDamage(inflictedDamage);
 
-        String message = "Você atacou %s e causou %d de dano no inimigo! "+defender.getLifeGauge();
+        String message = "Você atacou %s e causou %.2f de dano no inimigo!";
 
         if(diceValue == 20) {
             message = "Você acertou um ataque crítico! "+message;
         }
 
         final String weaponDescription = attacker.getWeapon().getAttackDescription();
-        System.out.printf("%n"+message, weaponDescription, inflictedDamage);
+        System.out.printf("%n"+message+"%n", weaponDescription, inflictedDamage);
     }
 
     private int getDiceValue() throws AttackerMissesException {

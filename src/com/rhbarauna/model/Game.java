@@ -2,12 +2,14 @@ package com.rhbarauna.model;
 
 import com.rhbarauna.Battle;
 import com.rhbarauna.enums.*;
+import com.rhbarauna.exception.AttackerMissesException;
 import com.rhbarauna.exception.EndGameException;
 import com.rhbarauna.exception.GameMotiveNotFoundException;
 import com.rhbarauna.exception.HeroDefeatedException;
 
 import static com.rhbarauna.utils.ConsoleUtils.print;
 import static com.rhbarauna.utils.ConsoleUtils.readInt;
+import static com.rhbarauna.utils.BattleUtils.getDiceValue;
 
 public class Game {
     private final GameLevel gameLevel;
@@ -33,8 +35,7 @@ public class Game {
     public void start() throws EndGameException, InterruptedException {
         playPrelude();
 
-        motive = revengeOrGlory();
-
+        revengeOrGlory();
         printMotiveDescription();
 
         print("Inspirado pelo motivo que te trouxe até aqui, você sente seu coração ardendo em chamas," +
@@ -46,24 +47,37 @@ public class Game {
 
         continueGameOrGiveUp();
 
+        print("Você se pergunta se dentro dessa sala pode haver inimigos, ou alguma armadilha, " +
+                "e pondera sobre como passar pela porta.");
+
+        runJumpOrWalk();
+
+        print("Você se encontra sozinho em uma sala quadrada, contendo uma porta em cada parede. " +
+                "Uma delas foi aquela pela qual você entrou, que estava aberta, e as outras três estão fechadas. " +
+                "A porta à sua frente é a maior das quatro, com inscrições em seu entorno em uma língua que você " +
+                "não sabe ler, mas reconhece como sendo a língua antiga utilizada pelo inimigo. Você se aproxima da " +
+                "porta e percebe que ela está trancada por duas fechaduras douradas, e você entende que precisará " +
+                "primeiro derrotar o que estiver nas outras duas portas laterais, antes de conseguir enfrentar o líder.");
+
+        print("Você se dirige para a porta à direita.");
+
+        print("Você se aproxima, tentando ouvir o que acontece porta adentro, mas não escuta nada. " +
+                "Segura com mais força sua arma com uma mão, enquanto empurra a porta com a outra. Ao entrar, " +
+                "você se depara com uma sala espaçosa, com vários equipamentos de batalha pendurados nas paredes " +
+                "e dispostos em armários e mesas. Você imagina que este seja o arsenal do inimigo, onde estão " +
+                "guardados os equipamentos que seus soldados utilizam quando saem para espalhar o terror nas " +
+                "cidades e vilas da região.");
+
+        print("Enquanto seu olhar percorre a sala, você ouve a porta se fechando e " +
+                "gira rapidamente para olhar para trás. Ali, de pé entre você e a porta fechada, bloqueando o " +
+                "caminho do seu destino, está um dos capitães do inimigo. Um orque horrendo, de armadura, " +
+                "capacete e espada em punho, em posição de combate. Ele avança em sua direção.");
+
         try {
-            print("Você se pergunta se dentro dessa sala pode haver inimigos, ou alguma armadilha, " +
-                    "e pondera sobre como passar pela porta.");
+            startFirstRoomBattle();
 
-            runJumpOrWalk();
-
-            print("\nVocê se encontra sozinho em uma sala quadrada, contendo uma porta em cada parede. " +
-                    "Uma delas foi aquela pela qual você entrou, que estava aberta, e as outras três estão fechadas. " +
-                    "A porta à sua frente é a maior das quatro, com inscrições em seu entorno em uma língua que você " +
-                    "não sabe ler, mas reconhece como sendo a língua antiga utilizada pelo inimigo. Você se aproxima da " +
-                    "porta e percebe que ela está trancada por duas fechaduras douradas, e você entende que precisará " +
-                    "primeiro derrotar o que estiver nas outras duas portas laterais, antes de conseguir enfrentar o líder.\n" +
-                    "Você se dirige para a porta à direita.");
-
-            startRightDoorLoop();
-
-            print("\nApós derrotar o Armeiro, você percebe que seus equipamentos estão muito danificados," +
-                    " e olha em volta, encarando todas aquelas peças de armaduras resistentes e em ótimo estado.\n");
+            print("Após derrotar o Armeiro, você percebe que seus equipamentos estão muito danificados," +
+                    " e olha em volta, encarando todas aquelas peças de armaduras resistentes e em ótimo estado.");
 
             changeEquipments();
 
@@ -71,7 +85,17 @@ public class Game {
                     "fechaduras da porta do líder inimigo. Você pega a chave e guarda numa pequena bolsa que leva " +
                     "presa ao cinto.");
 
-            startLeftDoorLoop();
+            print("Você retorna à sala anterior e se dirige à porta da esquerda. Você se aproxima, " +
+                    "tentando ouvir o que acontece porta adentro, mas não escuta nada. Segura com mais força sua arma " +
+                    "com uma mão, enquanto empurra a porta com a outra. Ao entrar, você se depara com uma sala parecida " +
+                    "com a do arsenal, mas em vez de armaduras, existem vários potes e garrafas de vidro com conteúdos " +
+                    "misteriosos e de cores diversas, e você entende que o capitão que vive ali, realiza experimentos " +
+                    "com diversos ingredientes, criando poções utilizadas pelos soldados para aterrorizar a região.");
+
+            print("No fundo da sala, olhando em sua direção, está outro dos capitães do inimigo. Um orque horrendo, " +
+                    "de armadura, cajado em punho, em posição de combate. Ele avança em sua direção.");
+
+            startSecondRoomBattle();
 
             print("Após derrotar o Alquimista, você olha em volta, tentando reconhecer alguma poção do " +
                     "estoque do inimigo. Em uma mesa, você reconhece uma pequena garrafa de vidro contendo um " +
@@ -95,6 +119,8 @@ public class Game {
 
             print("Ele percebe sua chegada e se levanta com um salto, apanhando seu machado de guerra de lâmina dupla.");
 
+            waitOrContinue();
+
             startMasterDoorLoop();
 
             print("!!!!!!!!!!!!!!!!!! VOCÊ CONSEGUIU !!!!!!!!!!!!!!!!!!");
@@ -103,10 +129,9 @@ public class Game {
 
             print("Você se levanta, olha para os prisioneiros, vai de um em um e os liberta, e todos " +
                     "vocês saem em direção à noite, retornando à cidade. Seu dever está cumprido.\n");
-
         }
         catch (HeroDefeatedException ex) {
-            print("Você não estava preparado para a força do inimigo. " + motive.getDefeatMessageFor(hero.getGender()));
+            throw new EndGameException("Você não estava preparado para a força do inimigo. " + motive.getDefeatMessageFor(hero.getGender()));
         }
     }
 
@@ -124,15 +149,15 @@ public class Game {
         }
     }
 
-    private GameMotive revengeOrGlory() {
+    private void revengeOrGlory() {
         try{
             print("Escolha sua motivação para invadir a caverna do inimigo e derrotá-lo:");
             int response = readInt("VINGANÇA (1) ou GLÓRIA (2) ");
 
-            return GameMotive.getById(response);
+            motive = GameMotive.getById(response);
         } catch (GameMotiveNotFoundException ex) {
             print("Opção inválida");
-            return revengeOrGlory();
+            revengeOrGlory();
         }
     }
 
@@ -140,7 +165,7 @@ public class Game {
         int response = readInt("SEGUIR (1) ou DESISTIR (2)? ");
 
         switch (response) {
-            case 1 -> print("\nVocê caminha, atento a todos os seus sentidos, por vários metros, até visualizar a " +
+            case 1 -> print("Você caminha, atento a todos os seus sentidos, por vários metros, até visualizar a " +
                     "frente uma fonte de luz, que você imagina ser a chama de uma tocha, vindo de dentro de uma " +
                     "porta aberta.");
             case 2 -> throw new EndGameException("O medo invade o seu coração e você sente que ainda não está à altura do desafio." +
@@ -151,79 +176,63 @@ public class Game {
     private void runJumpOrWalk() {
         int response = readInt("CORRENDO (1), SALTANDO (2) ou ANDANDO (3)? ");
         switch (response) {
-            case 1 -> print("\nCORRENDO\n Você respira fundo e desata a correr em direção à sala. " +
-                    "Quando passa pela porta, sente que pisou em uma pedra solta, mas não dá muita importância " +
-                    "e segue para dentro da sala, olhando ao redor à procura de inimigos. Não tem ninguém, " +
-                    "mas você ouve sons de flechas batendo na pedra atrás de você, e quando se vira, " +
-                    "vê várias flechas no chão. Espiando pela porta, você entende que pisou em uma armadilha " +
-                    "que soltou flechas de uma escotilha aberta no teto, mas por sorte você entrou correndo e " +
-                    "conseguiu escapar desse ataque surpresa.");
-            case 2 -> print("\nSANTANDO\n Você se concentra e pula em direção à luz, saltando de antes " +
-                    "da porta até o interior da sala.");
-            //TODO - reduzir o sangue do jogador em X pontos usando a logica de batalha
-            case 3 -> {
-                print("\nANDANDO\n Você toma cuidado e vai caminhando vagarosamente em direção à luz. " +
-                    "Quando você pisa exatamente embaixo da porta, você sente o chão ceder levemente, como se " +
-                    "tivesse pisado em uma pedra solta. Você ouve um ruído de mecanismos se movimentando, " +
-                    "e uma escotilha se abre no teto atrás de você, no corredor. Flechas voam da escotilha em " +
-                    "sua direção, e você salta para dentro da sala, porém uma delas te acerta na perna.");
+            case 1 -> {
+                print("CORRENDO");
+                print("Você respira fundo e desata a correr em direção à sala. ");
+                print("Quando passa pela porta, sente que pisou em uma pedra solta, mas não dá muita importância " +
+                        "e segue para dentro da sala, olhando ao redor à procura de inimigos.");
+                print("Não tem ninguém, mas você ouve sons de flechas batendo na pedra atrás de você, e quando se vira, " +
+                        "vê várias flechas no chão.");
+                print("Espiando pela porta, você entende que pisou em uma armadilha que soltou flechas de uma " +
+                        "escotilha aberta no teto, mas por sorte você entrou correndo e conseguiu escapar desse " +
+                        "ataque surpresa.");
+            }
+            case 2 -> {
+                print("SANTANDO");
+                print("Você se concentra e pula em direção à luz, saltando de antes da porta até o interior da sala.");
             }
 
+            case 3 -> {
+                print("ANDANDO");
+                print("Você toma cuidado e vai caminhando vagarosamente em direção à luz.");
+                print("Quando você pisa exatamente embaixo da porta, você sente o chão ceder levemente, como se " +
+                    "tivesse pisado em uma pedra solta. Você ouve um ruído de mecanismos se movimentando, " +
+                    "e uma escotilha se abre no teto atrás de você, no corredor.");
+                print("Flechas voam da escotilha em sua direção, e você salta para dentro da sala, " +
+                        "porém uma delas te acerta na perna.");
+
+                try{
+                    hero.takeDamage(getDiceValue(10));
+                } catch(AttackerMissesException ex) {
+                    print("Por sorte foi apenas de raspão e você não tomou nenhum dano");
+                }
+            }
         }
     }
 
-    private void startRightDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
-        print("Você se aproxima, tentando ouvir o que acontece porta adentro, mas não escuta nada. " +
-                "Segura com mais força sua arma com uma mão, enquanto empurra a porta com a outra. Ao entrar, " +
-                "você se depara com uma sala espaçosa, com vários equipamentos de batalha pendurados nas paredes " +
-                "e dispostos em armários e mesas. Você imagina que este seja o arsenal do inimigo, onde estão " +
-                "guardados os equipamentos que seus soldados utilizam quando saem para espalhar o terror nas " +
-                "cidades e vilas da região.\n Enquanto seu olhar percorre a sala, você ouve a porta se fechando e " +
-                "gira rapidamente para olhar para trás. Ali, de pé entre você e a porta fechada, bloqueando o " +
-                "caminho do seu destino, está um dos capitães do inimigo. Um orque horrendo, de armadura, " +
-                "capacete e espada em punho, em posição de combate. Ele avança em sua direção.");
-
+    private void startFirstRoomBattle() throws EndGameException, InterruptedException, HeroDefeatedException {
         Monster orck = new Monster("Orck Armeiro", 2, 1, 80F, Weapon.SWORD);
-        orck.setArmor(Armor.ARMOR);
-
-        Battle b1 = new Battle(hero, orck, gameLevel);
-        b1.startBattle();
-
+        startBattle(hero, orck, gameLevel);
     }
 
-    private void startLeftDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
-        print("Você retorna à sala anterior e se dirige à porta da esquerda. Você se aproxima, " +
-                "tentando ouvir o que acontece porta adentro, mas não escuta nada. Segura com mais força sua arma " +
-                "com uma mão, enquanto empurra a porta com a outra. Ao entrar, você se depara com uma sala parecida " +
-                "com a do arsenal, mas em vez de armaduras, existem vários potes e garrafas de vidro com conteúdos " +
-                "misteriosos e de cores diversas, e você entende que o capitão que vive ali, realiza experimentos " +
-                "com diversos ingredientes, criando poções utilizadas pelos soldados para aterrorizar a região.\n" +
-                "No fundo da sala, olhando em sua direção, está outro dos capitães do inimigo. Um orque horrendo, " +
-                "de armadura, cajado em punho, em posição de combate. Ele avança em sua direção.");
-
+    private void startSecondRoomBattle() throws EndGameException, InterruptedException, HeroDefeatedException {
         Monster orck = new Monster("Orck Alquimista", 4, 2, 90F, Weapon.STAFF);
-        orck.setArmor(Armor.ARMOR);
+        startBattle(hero, orck, gameLevel);
+    }
 
-        Battle b2 = new Battle(hero, orck, gameLevel);
-        b2.startBattle();
+    private void waitOrContinue() throws InterruptedException {
+        print("Deseja iniciar a batalha?");
+        int response = readInt("1 - Só se for agora \n2 - Vou esperar um pouco.");
+
+        if(response == 2) {
+            Thread.sleep(5000);
+            waitOrContinue();
+        }
     }
 
     private void startMasterDoorLoop() throws EndGameException, InterruptedException, HeroDefeatedException {
-        boolean wait = true;
-
-        while(wait) {
-            print("Deseja iniciar a batalha?");
-            int response = readInt("1 - Só se for agora \n2 - Vou esperar um pouco.");
-            wait = response == 2;
-
-            if(wait) Thread.sleep(5000);
-        }
-
         Monster orck = new Monster("Orck MASTER", 10, 4, 200F, Weapon.AXE);
-        orck.setArmor(Armor.ARMOR);
-
-        Battle b2 = new Battle(hero, orck, gameLevel);
-        b2.startBattle();
+        startBattle(hero, orck, gameLevel);
     }
 
     private void changeEquipments() {
@@ -239,6 +248,10 @@ public class Game {
             }
 
             case 2 -> print("Você decide que não precisa utilizar nada que venha das mãos do inimigo.");
+            default ->  {
+                print("Opção inv;alida");
+                changeEquipments();
+            }
         }
     }
 
@@ -259,4 +272,8 @@ public class Game {
         }
     }
 
+    private void startBattle(Hero hero, Monster monster, GameLevel gameLevel)  throws EndGameException, InterruptedException, HeroDefeatedException {
+        Battle b = new Battle(hero, monster, gameLevel);
+        b.run();
+    }
 }

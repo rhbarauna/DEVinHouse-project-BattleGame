@@ -28,7 +28,8 @@ public class Main {
         print("Tudo pronto");
 
         try {
-            new Game(hero, level).start();
+            Game game = new Game(hero, level);
+            game.start();
         }
         catch (Exception e) {
             print(e.getMessage());
